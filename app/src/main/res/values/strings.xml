@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MovieApp</string>
+    <string name="search_question_hint">Czego szukasz?</string>
 </resources>
