@@ -3,10 +3,9 @@ package com.github.w_kamil.movieapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.annimon.stream.Stream;
-import com.annimon.stream.function.Consumer;
+import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
+import android.widget.ViewFlipper;
 
 import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusAppCompatActivity;
@@ -16,13 +15,23 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
 
     private static final String SEARCH_TITLE = "search_title";
 
+    private MoviesListAdapter moviesListAdapter;
+    private ViewFlipper viewFlipper;
+    private ImageView noInteretImage;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listing);
         String title = getIntent().getStringExtra(SEARCH_TITLE);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        moviesListAdapter = new MoviesListAdapter();
+        recyclerView.setAdapter(moviesListAdapter);
+        viewFlipper = (ViewFlipper) findViewById(R.id.view_flipper);
+        noInteretImage = (ImageView) findViewById(R.id.no_internet_image_view);
         getPresenter().getDataAsync(title);
+
 
     }
 
@@ -33,15 +42,13 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
         return intent;
     }
 
-    public void setDataOnUiThread(final SearchResult result) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Stream.of(result.getItems()).forEach(new Consumer<MovieListingItem>() {
-                    @Override
-                    public void accept(MovieListingItem movieListingItem) {
-                        Log.d("result", "id" + movieListingItem.getImdbID());                    }
-                });
+    public void setDataOnUiThread(final SearchResult result, final boolean isProblemWithInternet) {
+        runOnUiThread(() -> {
+            if (isProblemWithInternet) {
+                viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(noInteretImage));
+            } else {
+                viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(recyclerView));
+                moviesListAdapter.setItems(result.getItems());
             }
         });
     }

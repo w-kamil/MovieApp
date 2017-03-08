@@ -4,9 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-/**
- * Created by Frod_ on 07.03.2017.
- */
 
 public class SearchResult {
 
@@ -16,7 +13,7 @@ public class SearchResult {
 
     private String totalResults;
     @SerializedName("Response")
-    private String Response;
+    private String response;
 
     public List<MovieListingItem> getItems() {
         return items;
@@ -27,6 +24,6 @@ public class SearchResult {
     }
 
     public String getResponse() {
-        return Response;
+        return response;
     }
 }

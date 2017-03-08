@@ -10,24 +10,19 @@ import java.util.Scanner;
 
 import nucleus.presenter.Presenter;
 
-/**
- * Created by Frod_ on 07.03.2017.
- */
 
 public class ListingPresenter extends Presenter<ListingActivity> {
 
-    public void getDataAsync(final String title){
-        new Thread(){
+    public void getDataAsync(final String title) {
+        new Thread() {
             @Override
             public void run() {
                 try {
                     String result = getData(title);
-
-                    SearchResult searchResult = new Gson().fromJson(result,SearchResult.class);
-
-
-                    getView().setDataOnUiThread(searchResult);
+                    SearchResult searchResult = new Gson().fromJson(result, SearchResult.class);
+                    getView().setDataOnUiThread(searchResult, false);
                 } catch (IOException e) {
+                    getView().setDataOnUiThread(null, true);
                     e.printStackTrace();
                 }
             }
@@ -39,6 +34,7 @@ public class ListingPresenter extends Presenter<ListingActivity> {
         String stringUrl = "http://www.omdbapi.com/?s=" + title;
         URL url = new URL(stringUrl);
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setConnectTimeout(3000);
         InputStream inputStream = urlConnection.getInputStream();
         return convertStreamToString(inputStream);
     }
