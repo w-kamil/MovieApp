@@ -14,7 +14,7 @@
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
@@ -28,7 +28,21 @@
             android:id="@+id/no_internet_image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/nointernet"/>
+            android:src="@drawable/nointernet" />
+
+        <FrameLayout
+            android:id="@+id/no_result"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_red_dark">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/no_results"
+                android:textSize="30sp" />
+        </FrameLayout>
 
     </ViewFlipper>
 
