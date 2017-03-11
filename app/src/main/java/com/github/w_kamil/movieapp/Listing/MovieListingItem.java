@@ -1,4 +1,4 @@
-package com.github.w_kamil.movieapp;
+package com.github.w_kamil.movieapp.Listing;
 
 
 import com.google.gson.annotations.SerializedName;

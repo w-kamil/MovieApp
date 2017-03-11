@@ -1,5 +1,6 @@
-package com.github.w_kamil.movieapp;
+package com.github.w_kamil.movieapp.Search;
 
+import com.github.w_kamil.movieapp.Listing.MovieListingItem;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

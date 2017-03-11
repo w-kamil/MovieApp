@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.github.w_kamil.movieapp.ListingActivity">
+    tools:context="com.github.w_kamil.movieapp.Listing.ListingActivity">
 
     <ViewFlipper
         android:id="@+id/view_flipper"
@@ -16,13 +16,29 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="LinearLayoutManager">
 
-        </android.support.v7.widget.RecyclerView>
+        <FrameLayout
+            android:id="@+id/results_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="LinearLayoutManager">
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/counter_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:textSize="15sp"
+                android:layout_gravity="bottom"
+                android:text="10/24"/>
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/no_internet_image_view"
@@ -43,6 +59,7 @@
                 android:text="@string/no_results"
                 android:textSize="30sp" />
         </FrameLayout>
+
 
     </ViewFlipper>
 
