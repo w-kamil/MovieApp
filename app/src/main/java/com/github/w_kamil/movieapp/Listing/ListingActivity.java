@@ -3,6 +3,7 @@ package com.github.w_kamil.movieapp.Listing;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -30,6 +31,7 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
     private static final String SEARCH_YEAR = "search_year";
     public static final int NO_YEAR_SELECTED = -1;
     public static final String SEARCH_TYPE = "search_type";
+    private LinearLayoutManager layoutManager;
 
     private MoviesListAdapter moviesListAdapter;
 
@@ -51,6 +53,8 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
     @BindView(R.id.no_result)
     FrameLayout noResult;
 
+    private EndlessScrollListener endlessScrollListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,10 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
 
         moviesListAdapter = new MoviesListAdapter();
         recyclerView.setAdapter(moviesListAdapter);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        endlessScrollListener = new EndlessScrollListener(layoutManager, getPresenter());
+        recyclerView.addOnScrollListener(endlessScrollListener);
 
         getPresenter().getDataAsync(title, year, type).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::success, this::error);
     }
@@ -79,6 +87,12 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
 
     private void error(Throwable throwable) {
         viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(noInteretImage));
+
+    }
+
+    public void appendItems(SearchResult searchResult){
+        moviesListAdapter.addItems(searchResult.getItems());
+        endlessScrollListener.setTotalItemNumber(Integer.parseInt(searchResult.getTotalResults()));
     }
 
     private void success(SearchResult searchResult) {
@@ -87,6 +101,7 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
         } else {
             viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(resultsView));
             moviesListAdapter.setItems(searchResult.getItems());
+            endlessScrollListener.setTotalItemNumber(Integer.parseInt(searchResult.getTotalResults()));
         }
     }
 
@@ -99,14 +114,4 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
         return intent;
     }
 
-//    public void setDataOnUiThread(final SearchResult result, final boolean isProblemWithInternet) {
-//        runOnUiThread(() -> {
-//            if (isProblemWithInternet) {
-//                viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(noInteretImage));
-//            } else {
-//                viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(recyclerView));
-//                moviesListAdapter.setItems(result.getItems());
-//            }
-//        });
-//    }
 }

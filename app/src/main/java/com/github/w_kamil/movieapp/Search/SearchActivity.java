@@ -85,7 +85,7 @@ public class SearchActivity extends AppCompatActivity {
         RetrfofitProvider retrfofitProvider = (RetrfofitProvider) getApplication();
         Retrofit retrofit = retrfofitProvider.provideRetrofit();
         SearchService searchService = retrofit.create(SearchService.class);
-        searchService.search("a*", "2016", null)
+        searchService.search(1, "a*", "2016", null)
                 .flatMap(searchResult -> Observable.fromIterable(searchResult.getItems()))
                 .map(movieListingItem -> movieListingItem.getPoster())
                 .filter(posterUrl -> !"N/A".equalsIgnoreCase(posterUrl))

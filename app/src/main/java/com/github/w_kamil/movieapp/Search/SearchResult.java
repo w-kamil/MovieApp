@@ -24,6 +24,14 @@ public class SearchResult {
         return totalResults;
     }
 
+    public void setItems(List<MovieListingItem> items) {
+        this.items = items;
+    }
+
+    public void setTotalResults(String totalResults) {
+        this.totalResults = totalResults;
+    }
+
     public String getResponse() {
         return response;
     }
