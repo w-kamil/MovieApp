@@ -25,7 +25,7 @@ import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusAppCompatActivity;
 
 @RequiresPresenter(ListingPresenter.class)
-public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> {
+public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> implements CurrentItemListener {
 
     private static final String SEARCH_TITLE = "search_title";
     private static final String SEARCH_YEAR = "search_year";
@@ -78,6 +78,7 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
         recyclerView.addOnScrollListener(endlessScrollListener);
 
         getPresenter().getDataAsync(title, year, type).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::success, this::error);
+
     }
 
     @OnClick(R.id.no_internet_image_view)
@@ -90,7 +91,7 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
 
     }
 
-    public void appendItems(SearchResult searchResult){
+    public void appendItems(SearchResult searchResult) {
         moviesListAdapter.addItems(searchResult.getItems());
         endlessScrollListener.setTotalItemNumber(Integer.parseInt(searchResult.getTotalResults()));
     }
@@ -102,6 +103,8 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
             viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(resultsView));
             moviesListAdapter.setItems(searchResult.getItems());
             endlessScrollListener.setTotalItemNumber(Integer.parseInt(searchResult.getTotalResults()));
+            endlessScrollListener.setCurrentItemsListener(this);
+            counterTextView.setText(layoutManager.findLastVisibleItemPosition() + "/" + Integer.parseInt(searchResult.getTotalResults()));
         }
     }
 
@@ -114,4 +117,8 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
         return intent;
     }
 
+    @Override
+    public void onNewCurrentItem(int currentItem, int totalItemsCount) {
+        counterTextView.setText(currentItem + "/" + totalItemsCount);
+    }
 }

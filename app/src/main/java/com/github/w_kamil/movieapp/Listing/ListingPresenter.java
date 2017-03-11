@@ -1,6 +1,8 @@
 package com.github.w_kamil.movieapp.Listing;
 
 
+import android.widget.Toast;
+
 import com.github.w_kamil.movieapp.Search.SearchResult;
 import com.github.w_kamil.movieapp.Search.SearchService;
 
@@ -48,7 +50,9 @@ public class ListingPresenter extends Presenter<ListingActivity> implements OnLo
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(searchResult -> {
-            getView().appendItems(searchResult);
-        });
+                    getView().appendItems(searchResult);
+                }, throwable -> {
+                    Toast.makeText(getView(), "Brak dostępu do sieci", Toast.LENGTH_SHORT).show();
+                });
     }
 }
