@@ -3,6 +3,7 @@ package com.github.w_kamil.movieapp.Listing;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.github.w_kamil.movieapp.Detail.DetailActivity;
 import com.github.w_kamil.movieapp.R;
 import com.github.w_kamil.movieapp.RetrfofitProvider;
 import com.github.w_kamil.movieapp.Search.SearchResult;
@@ -25,7 +27,7 @@ import nucleus.factory.RequiresPresenter;
 import nucleus.view.NucleusAppCompatActivity;
 
 @RequiresPresenter(ListingPresenter.class)
-public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> implements CurrentItemListener {
+public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> implements CurrentItemListener, OnMovieItemClickListener {
 
     private static final String SEARCH_TITLE = "search_title";
     private static final String SEARCH_YEAR = "search_year";
@@ -53,6 +55,9 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
     @BindView(R.id.no_result)
     FrameLayout noResult;
 
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout swipeRefreshLayout;
+
     private EndlessScrollListener endlessScrollListener;
 
 
@@ -71,14 +76,25 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
         String type = getIntent().getStringExtra(SEARCH_TYPE);
 
         moviesListAdapter = new MoviesListAdapter();
+        moviesListAdapter.setOnMovieItemClickListener(this);
         recyclerView.setAdapter(moviesListAdapter);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         endlessScrollListener = new EndlessScrollListener(layoutManager, getPresenter());
         recyclerView.addOnScrollListener(endlessScrollListener);
 
-        getPresenter().getDataAsync(title, year, type).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::success, this::error);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                startLoading(title, year, type);
+            }
+        });
+        startLoading(title, year, type);
 
+    }
+
+    private void startLoading(String title, int year, String type) {
+        getPresenter().getDataAsync(title, year, type).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::success, this::error);
     }
 
     @OnClick(R.id.no_internet_image_view)
@@ -87,6 +103,7 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
     }
 
     private void error(Throwable throwable) {
+        swipeRefreshLayout.setRefreshing(false);
         viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(noInteretImage));
 
     }
@@ -97,6 +114,7 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
     }
 
     private void success(SearchResult searchResult) {
+        swipeRefreshLayout.setRefreshing(false);
         if ("false".equalsIgnoreCase(searchResult.getResponse())) {
             viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(noResult));
         } else {
@@ -120,5 +138,12 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
     @Override
     public void onNewCurrentItem(int currentItem, int totalItemsCount) {
         counterTextView.setText(currentItem + "/" + totalItemsCount);
+    }
+
+    @Override
+    public void onMovieItemClick(String imdbID) {
+        Intent intent = DetailActivity.createIntent(this, imdbID);
+        startActivity(intent);
+
     }
 }

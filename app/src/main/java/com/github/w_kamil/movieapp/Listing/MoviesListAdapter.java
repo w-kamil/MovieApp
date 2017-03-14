@@ -17,7 +17,12 @@ import java.util.List;
 public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.MyViewHolder> {
 
     private List<MovieListingItem> items = Collections.emptyList();
+    private OnMovieItemClickListener onMovieItemClickListener;
 
+
+    public void setOnMovieItemClickListener(OnMovieItemClickListener onMovieItemClickListener) {
+        this.onMovieItemClickListener = onMovieItemClickListener;
+    }
 
 
     @Override
@@ -44,6 +49,11 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.My
         Glide.with(holder.poster.getContext()).load(movieListingItem.getPoster()).into(holder.poster);
         holder.titleAndYear.setText(movieListingItem.getTitle() + " (" + movieListingItem.getYear() + ")");
         holder.type.setText("Typ: " + movieListingItem.getType());
+        holder.itemView.setOnClickListener(v -> {
+            if(onMovieItemClickListener != null){
+                onMovieItemClickListener.onMovieItemClick(movieListingItem.getImdbID());
+            }
+        });
     }
 
     public void addItems(List<MovieListingItem> items) {
@@ -52,11 +62,13 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.My
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
+        View itemView;
         ImageView poster;
         TextView titleAndYear;
         TextView type;
         public MyViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
             poster = (ImageView) itemView.findViewById(R.id.poster_view);
             titleAndYear = (TextView) itemView.findViewById(R.id.tile_and_year_text_view);
             type = (TextView) itemView.findViewById(R.id.type_text_view);
