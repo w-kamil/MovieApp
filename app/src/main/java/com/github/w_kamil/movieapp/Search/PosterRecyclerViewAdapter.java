@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.github.w_kamil.movieapp.Listing.OnMovieItemClickListener;
 import com.github.w_kamil.movieapp.R;
 
 import java.util.Collections;
@@ -16,17 +17,20 @@ import java.util.List;
 import static butterknife.ButterKnife.*;
 
 
-/**
- * Created by Frod_ on 11.03.2017.
- */
+
 
 public class PosterRecyclerViewAdapter extends RecyclerView.Adapter<PosterRecyclerViewAdapter.ViewHolder> {
 
 
-    private List<String> urls = Collections.emptyList();
+    private List<SimpleMovieItem> simpleMowieItems = Collections.emptyList();
+    private OnMovieItemClickListener onMovieItemClickListener;
 
-    public void setUrls(List<String> urls){
-        this.urls = urls;
+    public void setOnMovieItemClickListener(OnMovieItemClickListener onMovieItemClickListener) {
+        this.onMovieItemClickListener = onMovieItemClickListener;
+    }
+
+    public void setSimpleMovieItems(List<SimpleMovieItem> simpleMovieItems){
+        this.simpleMowieItems = simpleMovieItems;
         notifyDataSetChanged();
     }
 
@@ -38,12 +42,21 @@ public class PosterRecyclerViewAdapter extends RecyclerView.Adapter<PosterRecycl
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Glide.with(holder.posterImageView.getContext()).load(urls.get(position)).into(holder.posterImageView);
+        Glide.with(holder.posterImageView.getContext()).load(simpleMowieItems.get(position).getPoster()).into(holder.posterImageView);
+
+        holder.posterImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(onMovieItemClickListener != null){
+                    onMovieItemClickListener.onMovieItemClick(simpleMowieItems.get(position).getImdbID());
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return urls.size();
+        return simpleMowieItems.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

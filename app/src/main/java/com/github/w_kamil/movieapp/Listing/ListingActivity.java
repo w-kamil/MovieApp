@@ -94,7 +94,7 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
     }
 
     private void startLoading(String title, int year, String type) {
-        getPresenter().getDataAsync(title, year, type).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::success, this::error);
+        getPresenter().startLoadingItems(title, year, type);
     }
 
     @OnClick(R.id.no_internet_image_view)
@@ -113,16 +113,16 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
         endlessScrollListener.setTotalItemNumber(Integer.parseInt(searchResult.getTotalResults()));
     }
 
-    private void success(SearchResult searchResult) {
+    private void success(ResultAggregator resultAggregator) {
         swipeRefreshLayout.setRefreshing(false);
-        if ("false".equalsIgnoreCase(searchResult.getResponse())) {
+        if ("false".equalsIgnoreCase(resultAggregator.getResponse())) {
             viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(noResult));
         } else {
             viewFlipper.setDisplayedChild(viewFlipper.indexOfChild(resultsView));
-            moviesListAdapter.setItems(searchResult.getItems());
-            endlessScrollListener.setTotalItemNumber(Integer.parseInt(searchResult.getTotalResults()));
+            moviesListAdapter.setItems(resultAggregator.getMovieItems());
+            endlessScrollListener.setTotalItemNumber(resultAggregator.getTotalItemsResult());
             endlessScrollListener.setCurrentItemsListener(this);
-            counterTextView.setText(layoutManager.findLastVisibleItemPosition() + "/" + Integer.parseInt(searchResult.getTotalResults()));
+            counterTextView.setText(layoutManager.findLastVisibleItemPosition() + "/" + (resultAggregator.getTotalItemsResult()));
         }
     }
 
@@ -145,5 +145,9 @@ public class ListingActivity extends NucleusAppCompatActivity<ListingPresenter> 
         Intent intent = DetailActivity.createIntent(this, imdbID);
         startActivity(intent);
 
+    }
+
+    public void setNewAggregatorResult(ResultAggregator newAggregatorResult) {
+        success(newAggregatorResult);
     }
 }
