@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">MovieApp</string>
     <string name="search_question_hint">Czego szukasz?</string>
+    <string name="by_year">Film z roku:</string>
+    <string name="by_type">Film typu:</string>
+    <string name="movie">Filmy</string>
+    <string name="series">Seriale</string>
+    <string name="game">Gry</string>
+    <string name="no_results">Brak wyników</string>
+
 </resources>
